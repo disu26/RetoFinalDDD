@@ -4,18 +4,18 @@ import co.com.sofka.domain.generic.ValueObject;
 
 import java.util.Objects;
 
-public final class Nombre implements ValueObject<String> {
+public final class Categoria implements ValueObject<String> {
     private final String value;
 
-    public Nombre(String value) {
+    public Categoria(String value) {
         this.value = Objects.requireNonNull(value);
 
         if (this.value.isBlank()){
-            throw new IllegalArgumentException("El Nombre no puede estar en blanco");
+            throw new IllegalArgumentException("La categoría no puede estar en blanco");
         }
 
         if(this.value.length() > 100){
-            throw new IllegalArgumentException("El nombre no permite mas de 100 caracteres");
+            throw new IllegalArgumentException("La categoría no permite mas de 100 caracteres");
         }
     }
 
