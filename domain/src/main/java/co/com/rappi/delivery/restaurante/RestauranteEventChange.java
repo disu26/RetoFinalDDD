@@ -25,6 +25,18 @@ public final class RestauranteEventChange extends EventChange {
             restaurante.despachadores.put(despachadorId, despachador);
         });
 
+        apply((MenuAgregado event) -> {
+            var menuId = event.getMenuId();
+            var menu = new Menu(menuId, event.getNombre(), event.getPrecio());
+            restaurante.menus.put(menuId, menu);
+        });
+
+        apply((CocineroAgregado event) -> {
+            var cocineroId = event.getCocineroId();
+            var cocinero = new Cocinero(cocineroId, event.getNombre());
+            restaurante.cocineros.put(cocineroId, cocinero);
+        });
+
         apply((NombreActualizado event) -> restaurante.nombre = new Nombre(event.getNombre().value()));
 
         apply((CategoriaAgregada event) -> restaurante.categorias.add(event.getCategoria()));

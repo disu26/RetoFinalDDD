@@ -43,9 +43,14 @@ public class Restaurante extends AggregateEvent<RestauranteId> {
         appendChange(new DespachadorAgregado(despachadorId, nombre)).apply();
     }
 
+    public void agregarMenu(Nombre nombre, Precio precio){
+        var menuId = new MenuId();
+        appendChange(new MenuAgregado(menuId, nombre, precio)).apply();
+    }
+
     public void agregarCocinero(Nombre nombre){
-        var despachadorId = new DespachadorId();
-        appendChange(new DespachadorAgregado(despachadorId, nombre)).apply();
+        var cocineroId = new CocineroId();
+        appendChange(new CocineroAgregado(cocineroId, nombre)).apply();
     }
 
     public void actualizarNombre(Nombre nombre){
