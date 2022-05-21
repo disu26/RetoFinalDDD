@@ -13,9 +13,8 @@ public class Factura extends Entity<FacturaId> {
     protected Fecha fecha;
     protected MedioPago medioPago;
 
-    public Factura(FacturaId facturaId, TotalPagar totalPagar, Fecha fecha, MedioPago medioPago, Propina propina) {
+    public Factura(FacturaId facturaId, Fecha fecha, MedioPago medioPago, Propina propina) {
         super(facturaId);
-        this.totalPagar = totalPagar;
         this.fecha = fecha;
         this.medioPago = medioPago;
         this.propina = propina;
@@ -28,4 +27,9 @@ public class Factura extends Entity<FacturaId> {
     public void actualizarPropina(Double propina){
         this.propina = new Propina(propina);
     }
+
+    public void actualizarTotalPagar(Double totalPagar){
+        this.totalPagar = new TotalPagar(totalPagar);
+    }
+
 }

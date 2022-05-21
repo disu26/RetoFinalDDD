@@ -23,9 +23,15 @@ public class Orden extends AggregateEvent<OrdenId> {
     protected Pqrs pqrs;
     protected Estado estado;
 
-    public Orden(OrdenId ordenId, RestauranteId restauranteId, CuentaId cuentaId, Factura factura) {
+    public Orden(OrdenId ordenId, RestauranteId restauranteId, CuentaId cuentaId) {
         super(ordenId);
-        appendChange(new OrdenCreada(restauranteId, cuentaId, factura)).apply();
+        appendChange(new OrdenRestauranteCreada(restauranteId, cuentaId)).apply();
+        subscribe(new OrdenEventChange(this));
+    }
+
+    public Orden(OrdenId ordenId, TiendaId tiendaId, CuentaId cuentaId) {
+        super(ordenId);
+        appendChange(new OrdenTiendaCreada(tiendaId, cuentaId)).apply();
         subscribe(new OrdenEventChange(this));
     }
 
@@ -54,6 +60,11 @@ public class Orden extends AggregateEvent<OrdenId> {
 
     public void entregarOrden(){
         appendChange(new OrdenEntregada()).apply();
+    }
+
+    public void generarFactura(Fecha fecha, MedioPago medioPago, Propina propina){
+        var facturaId = new FacturaId();
+        appendChange(new FacturaGenerada(facturaId, fecha, medioPago, propina));
     }
 
     public void asignarRappiTendero(Nombre nombre, Telefono telefono, Propina propina){
@@ -88,5 +99,37 @@ public class Orden extends AggregateEvent<OrdenId> {
 
     public void actualizarPropinaRappiTendero(Propina propina){
         appendChange(new PropinaRappiTenderoActualizado(propina)).apply();
+    }
+
+    public void actualizarTotalPagarFactura(TotalPagar totalPagar){
+        appendChange(new TotalPagarFacturaActualizado(totalPagar)).apply();
+    }
+
+    public RestauranteId restauranteId() {
+        return restauranteId;
+    }
+
+    public TiendaId tiendaId() {
+        return tiendaId;
+    }
+
+    public CuentaId cuentaId() {
+        return cuentaId;
+    }
+
+    public RappiTendero rappiTendero() {
+        return rappiTendero;
+    }
+
+    public Factura factura() {
+        return factura;
+    }
+
+    public Pqrs pqrs() {
+        return pqrs;
+    }
+
+    public Estado estado() {
+        return estado;
     }
 }
