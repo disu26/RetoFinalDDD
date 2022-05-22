@@ -50,16 +50,16 @@ public class Orden extends AggregateEvent<OrdenId> {
         appendChange(new OrdenRecibida()).apply();
     }
 
-    public void prepararOrden(){
-        appendChange(new OrdenPreparada()).apply();
+    public void prepararOrden(OrdenId ordenId, RappiTendero rappiTendero, Propina propina){
+        appendChange(new OrdenPreparada(ordenId, rappiTendero.nombre, rappiTendero.telefono, propina)).apply();
     }
 
     public void llevarOrden(){
         appendChange(new LlevandoOrden()).apply();
     }
 
-    public void entregarOrden(){
-        appendChange(new OrdenEntregada()).apply();
+    public void entregarOrden(OrdenId ordenId, Calificacion calificacion){
+        appendChange(new OrdenEntregada(ordenId, calificacion)).apply();
     }
 
     public void generarFactura(Fecha fecha, MedioPago medioPago, Propina propina){
