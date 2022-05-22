@@ -46,22 +46,6 @@ public class Orden extends AggregateEvent<OrdenId> {
         return orden;
     }
 
-    public void recibirOrden(){
-        appendChange(new OrdenRecibida()).apply();
-    }
-
-    public void prepararOrden(OrdenId ordenId, RappiTendero rappiTendero, Propina propina){
-        appendChange(new OrdenPreparada(ordenId, rappiTendero.nombre, rappiTendero.telefono, propina)).apply();
-    }
-
-    public void llevarOrden(){
-        appendChange(new LlevandoOrden()).apply();
-    }
-
-    public void entregarOrden(OrdenId ordenId, Calificacion calificacion){
-        appendChange(new OrdenEntregada(ordenId, calificacion)).apply();
-    }
-
     public void generarFactura(Fecha fecha, MedioPago medioPago, Propina propina){
         var facturaId = new FacturaId();
         appendChange(new FacturaGenerada(facturaId, fecha, medioPago, propina));

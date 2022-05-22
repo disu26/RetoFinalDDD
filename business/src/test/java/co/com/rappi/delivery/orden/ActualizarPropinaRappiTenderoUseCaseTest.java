@@ -3,15 +3,15 @@ package co.com.rappi.delivery.orden;
 import co.com.rappi.delivery.cuenta.values.CuentaId;
 import co.com.rappi.delivery.generic.values.Nombre;
 import co.com.rappi.delivery.generic.values.Telefono;
-import co.com.rappi.delivery.orden.events.OrdenPreparada;
+import co.com.rappi.delivery.orden.commands.ActualizarPropinaRappiTendero;
 import co.com.rappi.delivery.orden.events.OrdenTiendaCreada;
+import co.com.rappi.delivery.orden.events.PropinaRappiTenderoActualizado;
 import co.com.rappi.delivery.orden.events.RappiTenderoAsignado;
-import co.com.rappi.delivery.orden.values.OrdenId;
-import co.com.rappi.delivery.orden.values.Propina;
+import co.com.rappi.delivery.orden.values.*;
 import co.com.rappi.delivery.tienda.values.TiendaId;
 import co.com.sofka.business.generic.UseCaseHandler;
 import co.com.sofka.business.repository.DomainEventRepository;
-import co.com.sofka.business.support.TriggeredEvent;
+import co.com.sofka.business.support.RequestCommand;
 import co.com.sofka.domain.generic.DomainEvent;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -25,38 +25,33 @@ import java.util.List;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class AsignarRappiTenderoUseCaseTest {
+class ActualizarPropinaRappiTenderoUseCaseTest {
 
     @InjectMocks
-    private AsignarRappiTenderoUseCase useCase;
+    private ActualizarPropinaRappiTenderoUseCase useCase;
 
     @Mock
     private DomainEventRepository repository;
 
     @Test
-    void asignarRappiTenderoHappyPass(){
-        //Arrange
-        OrdenId ordenId = OrdenId.of("ddd");
-        Nombre nombre = new Nombre("Pedro");
-        Telefono telefono = new Telefono("123456");
-        Propina propina = new Propina(5000D);
-        var event = new OrdenPreparada(ordenId, nombre, telefono, propina);
+    void actualizarPropinaRappiTenderoHappyPass(){
+        OrdenId ordenId = OrdenId.of("dasd");
+        Propina propina = new Propina(2000D);
+        var command = new ActualizarPropinaRappiTendero(ordenId, propina);
 
-        when(repository.getEventsBy("ddd")).thenReturn(history());
+        when(repository.getEventsBy("dasd")).thenReturn(history());
         useCase.addRepository(repository);
 
         //Act
         var events = UseCaseHandler.getInstance()
-                .setIdentifyExecutor(event.getOrdenId().value())
-                .syncExecutor(useCase, new TriggeredEvent<>(event))
+                .setIdentifyExecutor(command.getOrdenId().value())
+                .syncExecutor(useCase, new RequestCommand<>(command))
                 .orElseThrow()
                 .getDomainEvents();
 
         //Assert
-        var rappiTenderoAsignado = (RappiTenderoAsignado)events.get(0);
-        Assertions.assertEquals("Pedro", rappiTenderoAsignado.getNombre().value());
-        Assertions.assertEquals("123456", rappiTenderoAsignado.getTelefono().value());
-        Assertions.assertEquals(5000D, rappiTenderoAsignado.getPropina().value());
+        var event = (PropinaRappiTenderoActualizado)events.get(0);
+        Assertions.assertEquals(2000D, event.getPropina().value());
     }
 
     private List<DomainEvent> history(){
@@ -67,6 +62,14 @@ class AsignarRappiTenderoUseCaseTest {
                 cuentaId
         );
         event.setAggregateRootId("dddd");
-        return List.of(event);
+
+        RappiTenderoId rappiTenderoId = RappiTenderoId.of("dasdfas");
+        Nombre nombre = new Nombre("Pedro");
+        Telefono telefono = new Telefono("123456");
+        Propina propina = new Propina(5000D);
+        var event2 = new RappiTenderoAsignado(
+                rappiTenderoId, nombre, telefono, propina
+        );
+        return List.of(event, event2);
     }
 }

@@ -1,7 +1,5 @@
 package co.com.rappi.delivery.orden.events;
 
-import co.com.rappi.delivery.generic.values.MedioPago;
-import co.com.rappi.delivery.orden.values.FacturaId;
 import co.com.rappi.delivery.orden.values.Propina;
 import co.com.sofka.domain.generic.DomainEvent;
 

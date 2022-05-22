@@ -1,21 +1,20 @@
 package co.com.rappi.delivery.orden;
 
-
 import co.com.rappi.delivery.cuenta.values.CuentaId;
-import co.com.rappi.delivery.generic.values.Calificacion;
+import co.com.rappi.delivery.generic.values.MedioPago;
 import co.com.rappi.delivery.generic.values.Nombre;
 import co.com.rappi.delivery.generic.values.Telefono;
-import co.com.rappi.delivery.orden.events.CalificacionRappiTenderoAgregada;
-import co.com.rappi.delivery.orden.events.OrdenEntregada;
+import co.com.rappi.delivery.orden.commands.ActualizarPropinaFactura;
+import co.com.rappi.delivery.orden.commands.GenerarFactura;
+import co.com.rappi.delivery.orden.events.FacturaGenerada;
 import co.com.rappi.delivery.orden.events.OrdenTiendaCreada;
+import co.com.rappi.delivery.orden.events.PropinaFacturaActualizada;
 import co.com.rappi.delivery.orden.events.RappiTenderoAsignado;
-import co.com.rappi.delivery.orden.values.OrdenId;
-import co.com.rappi.delivery.orden.values.Propina;
-import co.com.rappi.delivery.orden.values.RappiTenderoId;
+import co.com.rappi.delivery.orden.values.*;
 import co.com.rappi.delivery.tienda.values.TiendaId;
 import co.com.sofka.business.generic.UseCaseHandler;
 import co.com.sofka.business.repository.DomainEventRepository;
-import co.com.sofka.business.support.TriggeredEvent;
+import co.com.sofka.business.support.RequestCommand;
 import co.com.sofka.domain.generic.DomainEvent;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -24,38 +23,40 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class AgregarCalificacionRappiTenderoUseCaseTest {
+class ActualizarPropinaFacturaUseCaseTest {
 
     @InjectMocks
-    private AgregarCalificacionRappiTenderoUseCase useCase;
+    private ActualizarPropinaFacturaUseCase useCase;
 
     @Mock
     private DomainEventRepository repository;
 
     @Test
-    void agregarCalificacionRappiTenderoHappyPass(){
+    void actualizarPropinaFacturaHappyPass(){
         OrdenId ordenId = OrdenId.of("dasd");
-        Calificacion calificacion = new Calificacion(4);
-        var event = new OrdenEntregada(ordenId, calificacion);
+        Propina propina = new Propina(2000D);
+        var command = new ActualizarPropinaFactura(ordenId, propina);
 
         when(repository.getEventsBy("dasd")).thenReturn(history());
         useCase.addRepository(repository);
 
         //Act
         var events = UseCaseHandler.getInstance()
-                .setIdentifyExecutor(event.getOrdenId().value())
-                .syncExecutor(useCase, new TriggeredEvent<>(event))
+                .setIdentifyExecutor(command.getOrdenId().value())
+                .syncExecutor(useCase, new RequestCommand<>(command))
                 .orElseThrow()
                 .getDomainEvents();
 
         //Assert
-        var calificacionAgregada = (CalificacionRappiTenderoAgregada)events.get(0);
-        Assertions.assertEquals(4 , calificacionAgregada.getCalificacion().value());
+        var event = (PropinaFacturaActualizada)events.get(0);
+        Assertions.assertEquals(2000D, event.getPropina().value());
     }
 
     private List<DomainEvent> history(){
@@ -67,12 +68,12 @@ class AgregarCalificacionRappiTenderoUseCaseTest {
         );
         event.setAggregateRootId("dddd");
 
-        RappiTenderoId rappiTenderoId = RappiTenderoId.of("dasdfas");
-        Nombre nombre = new Nombre("Pedro");
-        Telefono telefono = new Telefono("123456");
-        Propina propina = new Propina(5000D);
-        var event2 = new RappiTenderoAsignado(
-                rappiTenderoId, nombre, telefono, propina
+        FacturaId facturaId = FacturaId.of("dasdfas");
+        Fecha fecha = new Fecha(LocalDateTime.now(), LocalDate.now());
+        MedioPago medioPago = new MedioPago("Tarjeta");
+        Propina propina = new Propina(2000D);
+        var event2 = new FacturaGenerada(
+                facturaId, fecha, medioPago, propina
         );
         return List.of(event, event2);
     }
