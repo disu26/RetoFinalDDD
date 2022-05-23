@@ -1,14 +1,13 @@
 package co.com.rappi.delivery.cuenta;
 
-import co.com.rappi.delivery.cuenta.commands.AgregarRappiPrime;
+import co.com.rappi.delivery.cuenta.commands.AgregarUbicacionUsuario;
 import co.com.rappi.delivery.cuenta.events.CuentaCreada;
-import co.com.rappi.delivery.cuenta.events.RappiPrimeAgregado;
+import co.com.rappi.delivery.cuenta.events.UbicacionUsuarioAgregada;
 import co.com.rappi.delivery.cuenta.values.CuentaId;
-import co.com.rappi.delivery.cuenta.values.Plan;
 import co.com.rappi.delivery.cuenta.values.UsuarioId;
-import co.com.rappi.delivery.generic.values.MedioPago;
 import co.com.rappi.delivery.generic.values.Nombre;
 import co.com.rappi.delivery.generic.values.Telefono;
+import co.com.rappi.delivery.generic.values.Ubicacion;
 import co.com.sofka.business.generic.UseCaseHandler;
 import co.com.sofka.business.repository.DomainEventRepository;
 import co.com.sofka.business.support.RequestCommand;
@@ -25,21 +24,20 @@ import java.util.List;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class AgregarRappiPrimeUseCaseTest {
+class AgregarUbicacionUsuarioUseCaseTest {
 
     @InjectMocks
-    private AgregarRappiPrimeUseCase useCase;
+    private AgregarUbicacionUsuarioUseCase useCase;
 
     @Mock
     private DomainEventRepository repository;
 
     @Test
-    void agregarRappiPrimeHappyPass(){
+    void agregarUbicacionUsuarioHappyPass(){
         //Arrange
         CuentaId cuentaId = CuentaId.of("ddd");
-        Plan plan = new Plan(Plan.Planes.PLUS);
-        MedioPago medioPago = new MedioPago("PSE");
-        var command = new AgregarRappiPrime(cuentaId, plan , medioPago);
+        Ubicacion ubicacion = new Ubicacion("Antioquia", "Medellin", "Cra 80A");
+        var command = new AgregarUbicacionUsuario(cuentaId, ubicacion);
 
         when(repository.getEventsBy("ddd")).thenReturn(history());
         useCase.addRepository(repository);
@@ -52,9 +50,8 @@ class AgregarRappiPrimeUseCaseTest {
                 .getDomainEvents();
 
         //Assert
-        var event = (RappiPrimeAgregado)events.get(0);
-        Assertions.assertEquals(plan, event.getPlan());
-        Assertions.assertEquals("PSE", event.getMedioPago().value());
+        var event = (UbicacionUsuarioAgregada)events.get(0);
+        Assertions.assertEquals(ubicacion, event.getUbicacion());
     }
 
     private List<DomainEvent> history(){

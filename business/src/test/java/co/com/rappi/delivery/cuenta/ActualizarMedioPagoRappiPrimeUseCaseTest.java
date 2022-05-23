@@ -1,10 +1,12 @@
 package co.com.rappi.delivery.cuenta;
 
-import co.com.rappi.delivery.cuenta.commands.AgregarRappiPrime;
+import co.com.rappi.delivery.cuenta.commands.ActualizarMedioPagoRappiPrime;
 import co.com.rappi.delivery.cuenta.events.CuentaCreada;
+import co.com.rappi.delivery.cuenta.events.MedioPagoRappiPrimeActualizado;
 import co.com.rappi.delivery.cuenta.events.RappiPrimeAgregado;
 import co.com.rappi.delivery.cuenta.values.CuentaId;
 import co.com.rappi.delivery.cuenta.values.Plan;
+import co.com.rappi.delivery.cuenta.values.RappiPrimeId;
 import co.com.rappi.delivery.cuenta.values.UsuarioId;
 import co.com.rappi.delivery.generic.values.MedioPago;
 import co.com.rappi.delivery.generic.values.Nombre;
@@ -25,21 +27,20 @@ import java.util.List;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class AgregarRappiPrimeUseCaseTest {
+class ActualizarMedioPagoRappiPrimeUseCaseTest {
 
     @InjectMocks
-    private AgregarRappiPrimeUseCase useCase;
+    private ActualizarMedioPagoRappiPrimeUseCase useCase;
 
     @Mock
     private DomainEventRepository repository;
 
     @Test
-    void agregarRappiPrimeHappyPass(){
+    void actualizarMedioPagoRappiPrimeHappyPass(){
         //Arrange
         CuentaId cuentaId = CuentaId.of("ddd");
-        Plan plan = new Plan(Plan.Planes.PLUS);
-        MedioPago medioPago = new MedioPago("PSE");
-        var command = new AgregarRappiPrime(cuentaId, plan , medioPago);
+        MedioPago medioPago = new MedioPago("Tarjeta Crédito");
+        var command = new ActualizarMedioPagoRappiPrime(cuentaId, medioPago);
 
         when(repository.getEventsBy("ddd")).thenReturn(history());
         useCase.addRepository(repository);
@@ -52,9 +53,8 @@ class AgregarRappiPrimeUseCaseTest {
                 .getDomainEvents();
 
         //Assert
-        var event = (RappiPrimeAgregado)events.get(0);
-        Assertions.assertEquals(plan, event.getPlan());
-        Assertions.assertEquals("PSE", event.getMedioPago().value());
+        var event = (MedioPagoRappiPrimeActualizado)events.get(0);
+        Assertions.assertEquals("Tarjeta Crédito", event.getMedioPago().value());
     }
 
     private List<DomainEvent> history(){
@@ -66,6 +66,14 @@ class AgregarRappiPrimeUseCaseTest {
                 usuario
         );
         event.setAggregateRootId("dddd");
-        return List.of(event);
+
+        RappiPrimeId rappiPrimeId = RappiPrimeId.of("dasdasd");
+        Plan plan = new Plan(Plan.Planes.PLUS);
+        MedioPago medioPago = new MedioPago("PSE");
+        var event2 = new RappiPrimeAgregado(
+                rappiPrimeId, plan, medioPago
+        );
+
+        return List.of(event, event2);
     }
 }

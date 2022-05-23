@@ -1,12 +1,12 @@
 package co.com.rappi.delivery.restaurante;
 
+import co.com.rappi.delivery.generic.values.Categoria;
 import co.com.rappi.delivery.generic.values.CostoEnvio;
 import co.com.rappi.delivery.generic.values.Nombre;
-import co.com.rappi.delivery.restaurante.AgregarCocineroUseCase;
-import co.com.rappi.delivery.restaurante.commands.AgregarCocinero;
-import co.com.rappi.delivery.restaurante.events.CocineroAgregado;
+import co.com.rappi.delivery.restaurante.commands.AgregarCategoria;
 import co.com.rappi.delivery.restaurante.events.RestauranteCreado;
 import co.com.rappi.delivery.restaurante.values.RestauranteId;
+import co.com.rappi.delivery.restaurante.events.CategoriaAgregada;
 import co.com.sofka.business.generic.UseCaseHandler;
 import co.com.sofka.business.repository.DomainEventRepository;
 import co.com.sofka.business.support.RequestCommand;
@@ -22,22 +22,21 @@ import java.util.List;
 
 import static org.mockito.Mockito.when;
 
-
 @ExtendWith(MockitoExtension.class)
-class AgregarCocineroUseCaseTest {
+class AgregarCategoriaUseCaseTest {
 
     @InjectMocks
-    private AgregarCocineroUseCase useCase;
+    private AgregarCategoriaUseCase useCase;
 
     @Mock
     private DomainEventRepository repository;
 
     @Test
-    void agregarCocineroHappyPass(){
+    void agregarCategoriaHappyPass(){
         //Arrange
         RestauranteId restauranteId = RestauranteId.of("ddd");
-        Nombre nombre = new Nombre("Pedro");
-        var command = new AgregarCocinero(restauranteId, nombre);
+        Categoria categoria = new Categoria("Farmacia");
+        var command = new AgregarCategoria(restauranteId, categoria);
 
         when(repository.getEventsBy("ddd")).thenReturn(history());
         useCase.addRepository(repository);
@@ -50,12 +49,12 @@ class AgregarCocineroUseCaseTest {
                 .getDomainEvents();
 
         //Assert
-        var event = (CocineroAgregado)events.get(0);
-        Assertions.assertEquals("Pedro", event.getNombre().value());
+        var event = (CategoriaAgregada)events.get(0);
+        Assertions.assertEquals("Farmacia", event.getCategoria().value());
     }
 
     private List<DomainEvent> history(){
-        Nombre nombre = new Nombre("Frisby");
+        Nombre nombre = new Nombre("Pasteur");
         CostoEnvio costoEnvio = new CostoEnvio(5000D);
         var event = new RestauranteCreado(
                 nombre, costoEnvio

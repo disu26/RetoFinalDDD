@@ -9,7 +9,7 @@ public final class NombreMenuActualizado extends DomainEvent {
     private final Nombre nombre;
 
     public NombreMenuActualizado(MenuId menuId, Nombre nombre) {
-        super("co.com.rappi.delivery.restaurante.events.NombreMenuActualizado");
+        super("co.com.rappi.delivery.restaurante.events.ActualizarNombreMenu");
         this.menuId = menuId;
         this.nombre = nombre;
     }

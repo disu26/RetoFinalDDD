@@ -27,7 +27,7 @@ public final class CuentaEventChange extends EventChange {
         apply((NombreUsuarioActualizado event) -> cuenta.usuario
                 .actualizarNombre(event.getNombre().value()));
 
-        apply((UbicacionUsuarioAgregada event) -> cuenta.agregarUbicacionUsuario(event.getUbicacion()));
+        apply((UbicacionUsuarioAgregada event) -> cuenta.usuario.agregarUbicacion(event.getUbicacion()));
 
         apply((TelefonoUsuarioActualizado event) -> cuenta.usuario
                 .actualizarTelefono(event.getTelefono().value()));

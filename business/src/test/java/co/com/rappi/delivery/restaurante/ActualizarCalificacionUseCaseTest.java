@@ -1,10 +1,10 @@
 package co.com.rappi.delivery.restaurante;
 
+import co.com.rappi.delivery.generic.values.Calificacion;
 import co.com.rappi.delivery.generic.values.CostoEnvio;
 import co.com.rappi.delivery.generic.values.Nombre;
-import co.com.rappi.delivery.restaurante.AgregarCocineroUseCase;
-import co.com.rappi.delivery.restaurante.commands.AgregarCocinero;
-import co.com.rappi.delivery.restaurante.events.CocineroAgregado;
+import co.com.rappi.delivery.restaurante.commands.ActualizarCalificacion;
+import co.com.rappi.delivery.restaurante.events.CalificacionActualizada;
 import co.com.rappi.delivery.restaurante.events.RestauranteCreado;
 import co.com.rappi.delivery.restaurante.values.RestauranteId;
 import co.com.sofka.business.generic.UseCaseHandler;
@@ -22,22 +22,21 @@ import java.util.List;
 
 import static org.mockito.Mockito.when;
 
-
 @ExtendWith(MockitoExtension.class)
-class AgregarCocineroUseCaseTest {
+class ActualizarCalificacionUseCaseTest {
 
     @InjectMocks
-    private AgregarCocineroUseCase useCase;
+    private ActualizarCalificacionUseCase useCase;
 
     @Mock
     private DomainEventRepository repository;
 
     @Test
-    void agregarCocineroHappyPass(){
+    void actualizarCalificacionHappyPass(){
         //Arrange
         RestauranteId restauranteId = RestauranteId.of("ddd");
-        Nombre nombre = new Nombre("Pedro");
-        var command = new AgregarCocinero(restauranteId, nombre);
+        Calificacion calificacion = new Calificacion(5);
+        var command = new ActualizarCalificacion(restauranteId, calificacion);
 
         when(repository.getEventsBy("ddd")).thenReturn(history());
         useCase.addRepository(repository);
@@ -50,8 +49,8 @@ class AgregarCocineroUseCaseTest {
                 .getDomainEvents();
 
         //Assert
-        var event = (CocineroAgregado)events.get(0);
-        Assertions.assertEquals("Pedro", event.getNombre().value());
+        var event = (CalificacionActualizada)events.get(0);
+        Assertions.assertEquals(5, event.getCalificacion().value());
     }
 
     private List<DomainEvent> history(){

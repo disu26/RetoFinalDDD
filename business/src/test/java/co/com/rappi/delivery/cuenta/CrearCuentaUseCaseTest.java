@@ -1,13 +1,11 @@
 package co.com.rappi.delivery.cuenta;
 
-import co.com.rappi.delivery.cuenta.Usuario;
 import co.com.rappi.delivery.cuenta.commands.CrearCuenta;
 import co.com.rappi.delivery.cuenta.events.CuentaCreada;
 import co.com.rappi.delivery.cuenta.values.CuentaId;
 import co.com.rappi.delivery.cuenta.values.UsuarioId;
 import co.com.rappi.delivery.generic.values.Nombre;
 import co.com.rappi.delivery.generic.values.Telefono;
-import co.com.rappi.delivery.cuenta.CrearCuentaUseCase;
 import co.com.sofka.business.generic.UseCaseHandler;
 import co.com.sofka.business.support.RequestCommand;
 import org.junit.jupiter.api.Assertions;

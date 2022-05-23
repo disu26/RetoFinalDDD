@@ -2,9 +2,8 @@ package co.com.rappi.delivery.restaurante;
 
 import co.com.rappi.delivery.generic.values.CostoEnvio;
 import co.com.rappi.delivery.generic.values.Nombre;
-import co.com.rappi.delivery.restaurante.AgregarCocineroUseCase;
-import co.com.rappi.delivery.restaurante.commands.AgregarCocinero;
-import co.com.rappi.delivery.restaurante.events.CocineroAgregado;
+import co.com.rappi.delivery.restaurante.commands.ActualizarCostoEnvio;
+import co.com.rappi.delivery.restaurante.events.CostoEnvioActualizado;
 import co.com.rappi.delivery.restaurante.events.RestauranteCreado;
 import co.com.rappi.delivery.restaurante.values.RestauranteId;
 import co.com.sofka.business.generic.UseCaseHandler;
@@ -22,22 +21,21 @@ import java.util.List;
 
 import static org.mockito.Mockito.when;
 
-
 @ExtendWith(MockitoExtension.class)
-class AgregarCocineroUseCaseTest {
+class ActualizarCostoEnvioUseCaseTest {
 
     @InjectMocks
-    private AgregarCocineroUseCase useCase;
+    private ActualizarCostoEnvioUseCase useCase;
 
     @Mock
     private DomainEventRepository repository;
 
     @Test
-    void agregarCocineroHappyPass(){
+    void actualizarCostoEnvioHappyPass(){
         //Arrange
         RestauranteId restauranteId = RestauranteId.of("ddd");
-        Nombre nombre = new Nombre("Pedro");
-        var command = new AgregarCocinero(restauranteId, nombre);
+        CostoEnvio costoEnvio = new CostoEnvio(6500D);
+        var command = new ActualizarCostoEnvio(restauranteId, costoEnvio);
 
         when(repository.getEventsBy("ddd")).thenReturn(history());
         useCase.addRepository(repository);
@@ -50,12 +48,12 @@ class AgregarCocineroUseCaseTest {
                 .getDomainEvents();
 
         //Assert
-        var event = (CocineroAgregado)events.get(0);
-        Assertions.assertEquals("Pedro", event.getNombre().value());
+        var event = (CostoEnvioActualizado)events.get(0);
+        Assertions.assertEquals(6500D, event.getCostoEnvio().value());
     }
 
     private List<DomainEvent> history(){
-        Nombre nombre = new Nombre("Frisby");
+        Nombre nombre = new Nombre("Pasteur");
         CostoEnvio costoEnvio = new CostoEnvio(5000D);
         var event = new RestauranteCreado(
                 nombre, costoEnvio

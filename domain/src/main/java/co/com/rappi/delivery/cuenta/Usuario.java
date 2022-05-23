@@ -6,11 +6,12 @@ import co.com.rappi.delivery.generic.values.Telefono;
 import co.com.rappi.delivery.generic.values.Ubicacion;
 import co.com.sofka.domain.generic.Entity;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class Usuario extends Entity<UsuarioId> {
     protected Nombre nombre;
-    protected Set<Ubicacion> ubicaciones;
+    protected Set<Ubicacion> ubicaciones = new HashSet<>();
     protected Telefono telefono;
 
     public Usuario(UsuarioId usuarioId, Nombre nombre, Telefono telefono) {

@@ -6,10 +6,11 @@ import co.com.rappi.delivery.restaurante.values.MenuId;
 import co.com.rappi.delivery.restaurante.values.Plato;
 import co.com.sofka.domain.generic.Entity;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class Menu extends Entity<MenuId> {
-    protected Set<Plato> platos;
+    protected Set<Plato> platos = new HashSet<>();
     protected Nombre nombre;
     protected Precio precio;
 

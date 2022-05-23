@@ -2,10 +2,14 @@ package co.com.rappi.delivery.restaurante;
 
 import co.com.rappi.delivery.generic.values.CostoEnvio;
 import co.com.rappi.delivery.generic.values.Nombre;
-import co.com.rappi.delivery.restaurante.AgregarCocineroUseCase;
-import co.com.rappi.delivery.restaurante.commands.AgregarCocinero;
+import co.com.rappi.delivery.generic.values.Precio;
+import co.com.rappi.delivery.restaurante.commands.ActualizarNombreCocinero;
 import co.com.rappi.delivery.restaurante.events.CocineroAgregado;
+import co.com.rappi.delivery.restaurante.events.MenuAgregado;
+import co.com.rappi.delivery.restaurante.events.NombreCocineroActualizado;
 import co.com.rappi.delivery.restaurante.events.RestauranteCreado;
+import co.com.rappi.delivery.restaurante.values.CocineroId;
+import co.com.rappi.delivery.restaurante.values.MenuId;
 import co.com.rappi.delivery.restaurante.values.RestauranteId;
 import co.com.sofka.business.generic.UseCaseHandler;
 import co.com.sofka.business.repository.DomainEventRepository;
@@ -22,22 +26,22 @@ import java.util.List;
 
 import static org.mockito.Mockito.when;
 
-
 @ExtendWith(MockitoExtension.class)
-class AgregarCocineroUseCaseTest {
+class ActualizarNombreCocineroUseCaseTest {
 
     @InjectMocks
-    private AgregarCocineroUseCase useCase;
+    private ActualizarNombreCocineroUseCase useCase;
 
     @Mock
     private DomainEventRepository repository;
 
     @Test
-    void agregarCocineroHappyPass(){
+    void actualizarNombreCocineroHappyPass(){
         //Arrange
         RestauranteId restauranteId = RestauranteId.of("ddd");
-        Nombre nombre = new Nombre("Pedro");
-        var command = new AgregarCocinero(restauranteId, nombre);
+        CocineroId cocineroId = CocineroId.of("dasd");
+        Nombre nombre = new Nombre("María");
+        var command = new ActualizarNombreCocinero(restauranteId, cocineroId, nombre);
 
         when(repository.getEventsBy("ddd")).thenReturn(history());
         useCase.addRepository(repository);
@@ -50,18 +54,25 @@ class AgregarCocineroUseCaseTest {
                 .getDomainEvents();
 
         //Assert
-        var event = (CocineroAgregado)events.get(0);
-        Assertions.assertEquals("Pedro", event.getNombre().value());
+        var event = (NombreCocineroActualizado)events.get(0);
+        Assertions.assertEquals("dasd", event.getCocineroId().value());
+        Assertions.assertEquals("María", event.getNombre().value());
     }
 
     private List<DomainEvent> history(){
-        Nombre nombre = new Nombre("Frisby");
+        Nombre nombre = new Nombre("Pasteur");
         CostoEnvio costoEnvio = new CostoEnvio(5000D);
         var event = new RestauranteCreado(
                 nombre, costoEnvio
         );
         event.setAggregateRootId("dddd");
 
-        return List.of(event);
+        CocineroId cocineroId = CocineroId.of("dasd");
+        Nombre nombreCocinero = new Nombre("Pedro");
+        var event2 = new CocineroAgregado(
+                cocineroId, nombreCocinero
+        );
+
+        return List.of(event, event2);
     }
 }

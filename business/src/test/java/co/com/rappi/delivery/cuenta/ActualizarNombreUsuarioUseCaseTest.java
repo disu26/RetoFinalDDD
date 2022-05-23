@@ -1,12 +1,12 @@
-package co.com.rappi.delivery.restaurante;
+package co.com.rappi.delivery.cuenta;
 
-import co.com.rappi.delivery.generic.values.CostoEnvio;
+import co.com.rappi.delivery.cuenta.commands.ActualizarNombreUsuario;
+import co.com.rappi.delivery.cuenta.events.CuentaCreada;
+import co.com.rappi.delivery.cuenta.events.NombreUsuarioActualizado;
+import co.com.rappi.delivery.cuenta.values.CuentaId;
+import co.com.rappi.delivery.cuenta.values.UsuarioId;
 import co.com.rappi.delivery.generic.values.Nombre;
-import co.com.rappi.delivery.restaurante.AgregarCocineroUseCase;
-import co.com.rappi.delivery.restaurante.commands.AgregarCocinero;
-import co.com.rappi.delivery.restaurante.events.CocineroAgregado;
-import co.com.rappi.delivery.restaurante.events.RestauranteCreado;
-import co.com.rappi.delivery.restaurante.values.RestauranteId;
+import co.com.rappi.delivery.generic.values.Telefono;
 import co.com.sofka.business.generic.UseCaseHandler;
 import co.com.sofka.business.repository.DomainEventRepository;
 import co.com.sofka.business.support.RequestCommand;
@@ -22,46 +22,46 @@ import java.util.List;
 
 import static org.mockito.Mockito.when;
 
-
 @ExtendWith(MockitoExtension.class)
-class AgregarCocineroUseCaseTest {
+class ActualizarNombreUsuarioUseCaseTest {
 
     @InjectMocks
-    private AgregarCocineroUseCase useCase;
+    private ActualizarNombreUsuarioUseCase useCase;
 
     @Mock
     private DomainEventRepository repository;
 
     @Test
-    void agregarCocineroHappyPass(){
+    void actualizarNombreUsuarioHappyPass(){
         //Arrange
-        RestauranteId restauranteId = RestauranteId.of("ddd");
-        Nombre nombre = new Nombre("Pedro");
-        var command = new AgregarCocinero(restauranteId, nombre);
+        CuentaId cuentaId = CuentaId.of("ddd");
+        Nombre nombre = new Nombre("Andrey");
+        var command = new ActualizarNombreUsuario(cuentaId, nombre);
 
         when(repository.getEventsBy("ddd")).thenReturn(history());
         useCase.addRepository(repository);
 
         //Act
         var events = UseCaseHandler.getInstance()
-                .setIdentifyExecutor(command.getRestauranteId().value())
+                .setIdentifyExecutor(command.getCuentaId().value())
                 .syncExecutor(useCase, new RequestCommand<>(command))
                 .orElseThrow()
                 .getDomainEvents();
 
         //Assert
-        var event = (CocineroAgregado)events.get(0);
-        Assertions.assertEquals("Pedro", event.getNombre().value());
+        var event = (NombreUsuarioActualizado)events.get(0);
+        Assertions.assertEquals("Andrey", event.getNombre().value());
     }
 
     private List<DomainEvent> history(){
-        Nombre nombre = new Nombre("Frisby");
-        CostoEnvio costoEnvio = new CostoEnvio(5000D);
-        var event = new RestauranteCreado(
-                nombre, costoEnvio
+        UsuarioId usuarioId = new UsuarioId("dasd");
+        Nombre nombre = new Nombre("Juan");
+        Telefono telefono = new Telefono("456789");
+        Usuario usuario = new Usuario(usuarioId, nombre, telefono);
+        var event = new CuentaCreada(
+                usuario
         );
         event.setAggregateRootId("dddd");
-
         return List.of(event);
     }
 }
